@@ -2,6 +2,7 @@
 require("dotenv").config();
 
 // Require methods for json package files
+var fs = require("fs");
 var inquirer = require("inquirer");
 var axios = require("axios");
 var moment = require("moment");
@@ -12,7 +13,9 @@ var keys = require("./keys.js");
 
 // access keys information
 var spotify = new Spotify(keys.spotify);
-
+var bintId = keys.bintId;
+var searchType = process.argv[2]
+// var searchWord = process.argv[3]
 
 var showSong = function () {
 
@@ -32,7 +35,7 @@ var showSong = function () {
         var artist = songs[i].artists[0].name;
         var songTitle = songs[i].name;
         var albumName = songs[i].album.name;
-        var songPreview = songs[i].preview_url;
+        var songPreview = songs[i].preview_url.split("=")[0];
   
         console.log("--------------" + "\nArtist: " + artist + "\nSong Title: " + songTitle + "\nSong Preview: " + songPreview + "\nAlbum Name: " + albumName + "\n--------------")
       }
@@ -42,8 +45,6 @@ var showSong = function () {
     });
   })
 }
-
-showSong()
 
 
 // Uses inquirer to prompt user for artist they want to see then uses axios to call Bands In Town API
@@ -58,7 +59,7 @@ var showConcert = function () {
     
     var artist = answers.artist;
 
-    var queryUrlBandsintown = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=";
+    var queryUrlBandsintown = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=" + bintId;
 
     console.log(queryUrlBandsintown);
     
@@ -73,4 +74,60 @@ var showConcert = function () {
   )
 }
 
-// showConcert()
+var doThis = function () {
+  
+    fs.readFile("random.txt", "utf8", function (error, data) {
+  
+    // If the code experiences any errors it will log the error to the console.
+    if (error) {
+      return console.log(error);
+    }
+  
+    // We will then print the contents of data
+    console.log(data);
+  
+    // Then split it by commas (to make it more readable)
+    var dataArr = data.split(",");
+  
+    // We will then re-display the content as an array for later use.
+    console.log(dataArr);
+
+    // Calls spotify API
+    spotify
+      .search({ type: 'track', query: dataArr[1], limit: 5 })
+      .then(function (response) {
+
+        var songs = response.tracks.items
+
+        for (var i = 0; i < songs.length; i++) {
+          var artist = songs[i].artists[0].name;
+          var songTitle = songs[i].name;
+          var albumName = songs[i].album.name;
+          var songPreview = songs[i].preview_url.split("=")[0];
+
+          console.log("--------------" + "\nArtist: " + artist + "\nSong Title: " + songTitle + "\nSong Preview: " + songPreview + "\nAlbum Name: " + albumName + "\n--------------")
+        }
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  });
+}
+
+
+switch (searchType) {
+  case "concert-this":
+    showConcert();
+    break;
+
+  case "spotify-this-song":
+    showSong();
+    break;
+
+  case "do-this":
+    doThis();
+    break;
+
+  default:
+    console.log("Not a recognized command");
+}
