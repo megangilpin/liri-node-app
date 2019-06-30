@@ -15,37 +15,50 @@ var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 var bintId = keys.bintId;
 var searchType = process.argv[2]
-// var searchWord = process.argv[3]
 
+// Uses inquirer to prompt user for song they want to hear then calls Spotify
 var showSong = function () {
-
   inquirer.prompt([
     {
       name: "song",
       message: "What song do you want to find?"
     },
   ]).then(function (answers) {
-  spotify
-    .search({ type: 'track', query: answers.song, limit:5})
-    .then(function (response) {
-
-      var songs = response.tracks.items
-      
-      for (var i = 0; i < songs.length; i++){
-        var artist = songs[i].artists[0].name;
-        var songTitle = songs[i].name;
-        var albumName = songs[i].album.name;
-        var songPreview = songs[i].preview_url.split("=")[0];
-  
-        console.log("--------------" + "\nArtist: " + artist + "\nSong Title: " + songTitle + "\nSong Preview: " + songPreview + "\nAlbum Name: " + albumName + "\n--------------")
-      }
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
+    var song = answers.song
+    spotifySearch(song)
   })
-}
+}  
 
+var showMovie = function () {
+  inquirer.prompt([
+    {
+      name: "movie",
+      message: "What movie do you want to know about?"
+    },
+  ]).then(function (answers) {
+
+    var movieTitle = answers.movie;
+    var queryUrl = "http://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&apikey=trilogy";
+  
+    // This line is just to help us debug against the actual URL.
+  
+    axios.get(queryUrl).then(
+      function (response) {
+        var info = "\nType of search: " + searchType + "\nMovie Searched : " + movieTitle + "\n--------------" + "\nMovie Title: " + response.data.Title + "\nMovie Release Date: " + response.data.Released + "\nIMDB Rating: " + response.data.Ratings[0].Value + "\nRotten Tomatoes Rating: " + response.data.Ratings[1].Value + "Country produced in: " + response.data.Country + "\nPlot of " + movieTitle + " : " + response.data.Plot + "\nActors in " + movieTitle + " : " + response.data.Actors + "\n--------------";
+
+      // Writes info to log.txt file then displays info in the terminal
+        writeFile(info)
+      })
+      .catch(function (error) {
+        if (error.response) {
+          console.log(error.response)
+        }
+        else {
+          console.log("Are you sure " + movieTitle + " is a Movie Title?")
+        }
+      });
+  });
+}
 
 // Uses inquirer to prompt user for artist they want to see then uses axios to call Bands In Town API
 var showConcert = function () {
@@ -61,60 +74,68 @@ var showConcert = function () {
 
     var queryUrlBandsintown = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=" + bintId;
 
-    console.log(queryUrlBandsintown);
-    
     axios.get(queryUrlBandsintown).then(
       function (response) {
-          for (var i = 0; i < 5; i++){
-            console.log("--------------" + "\nVenue Name: " + response.data[i].venue.name + "\nVenue Location: " + response.data[i].venue.city + "\nEvent Date: " + moment(response.data[i].datetime).format("MM/DD/YYYY") + "\n--------------");
-          }
+        var info = "\nType of search: " + searchType + "\nBand you want to see: " + artist;
+        for (var i = 0; i < 5; i++){
+          info += "\n--------------"  + "\nVenue Name: " + response.data[i].venue.name + "\nVenue Location: " + response.data[i].venue.city + "\nEvent Date: " + moment(response.data[i].datetime).format("MM/DD/YYYY") + "\n--------------";
         }
-      );
-    }
-  )
+      // Writes info to log.txt file then displays info in the terminal
+      writeFile(info)
+    }) 
+  })
 }
 
+// Calls the Spotify using the the listed with ing the Random.txt file
 var doThis = function () {
   
-    fs.readFile("random.txt", "utf8", function (error, data) {
-  
-    // If the code experiences any errors it will log the error to the console.
-    if (error) {
-      return console.log(error);
-    }
-  
-    // We will then print the contents of data
-    console.log(data);
-  
-    // Then split it by commas (to make it more readable)
+  fs.readFile("random.txt", "utf8", function (error, data) {
+  if (error) {
+    return console.log(error);
+  }
     var dataArr = data.split(",");
-  
-    // We will then re-display the content as an array for later use.
-    console.log(dataArr);
-
+    var song = dataArr[1]
     // Calls spotify API
-    spotify
-      .search({ type: 'track', query: dataArr[1], limit: 5 })
-      .then(function (response) {
-
-        var songs = response.tracks.items
-
-        for (var i = 0; i < songs.length; i++) {
-          var artist = songs[i].artists[0].name;
-          var songTitle = songs[i].name;
-          var albumName = songs[i].album.name;
-          var songPreview = songs[i].preview_url.split("=")[0];
-
-          console.log("--------------" + "\nArtist: " + artist + "\nSong Title: " + songTitle + "\nSong Preview: " + songPreview + "\nAlbum Name: " + albumName + "\n--------------")
-        }
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    spotifySearch(song)
   });
 }
 
+function spotifySearch (song) {
+  spotify.search({ type: 'track', query: song, limit: 5 })
+    .then(function (response) {
 
+      var songs = response.tracks.items
+      var info = "\nType of search: " + searchType + "\nSong Searched: " + song;
+
+      for (var i = 0; i < songs.length; i++) {
+        var songPreview = songs[i].preview_url;
+        if (songs[i].preview_url) {
+          songPreview = songs[i].preview_url.split("=")[0]
+        }
+        info += "\n--------------" + "\nArtist: " + songs[i].artists[0].name + "\nSong Title: " + songs[i].name + "\nSong Preview: " + songPreview + "\nAlbum Name: " + songs[i].album.name + "\n--------------"
+      }
+      
+      // Writes info to log.txt file then displays info in the terminal
+      writeFile(info)
+    })
+  .catch(function (err) {
+    console.log(err);
+  });
+}
+
+// Writes info to log.txt file then displays info in the terminal
+function writeFile (info){
+  fs.appendFile("log.txt", info, function (err) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(info)
+    }
+  });
+}
+
+// switch statement to call the functions depending on what the user types
 switch (searchType) {
   case "concert-this":
     showConcert();
@@ -124,7 +145,11 @@ switch (searchType) {
     showSong();
     break;
 
-  case "do-this":
+  case "movie-this":
+    showMovie();
+    break;
+
+  case "do-what-it-says":
     doThis();
     break;
 

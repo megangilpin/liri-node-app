@@ -1,0 +1,28 @@
+
+Type of search: movie-this
+Movie Searched : The Matrix--------------
+Movie Title: The Matrix
+Movie Release Date: 31 Mar 1999
+IMDB Rating: 8.7/10
+Rotten Tomatoes Rating: 88%Country produced in: USA
+Plot of The Matrix : A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+Actors in The Matrix : Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving
+Type of search: movie-this
+Movie Searched : The Matrix
+--------------
+Movie Title: The Matrix
+Movie Release Date: 31 Mar 1999
+IMDB Rating: 8.7/10
+Rotten Tomatoes Rating: 88%Country produced in: USA
+Plot of The Matrix : A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+Actors in The Matrix : Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving
+Type of search: movie-this
+Movie Searched : The Matrix
+--------------
+Movie Title: The Matrix
+Movie Release Date: 31 Mar 1999
+IMDB Rating: 8.7/10
+Rotten Tomatoes Rating: 88%Country produced in: USA
+Plot of The Matrix : A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+Actors in The Matrix : Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving
+--------------
