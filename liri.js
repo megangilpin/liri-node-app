@@ -16,7 +16,43 @@ var spotify = new Spotify(keys.spotify);
 var bintId = keys.bintId;
 var searchType = process.argv[2]
 
-// Uses inquirer to prompt user for song they want to hear then calls Spotify
+// Writes info to log.txt file then displays info in the terminal
+function writeFile(info) {
+  fs.appendFile("log.txt", info, function (err) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(info)
+    }
+  });
+}
+
+// Calls the Spotify api then uses the write file function
+function spotifySearch(song) {
+  spotify.search({ type: 'track', query: song, limit: 5 })
+    .then(function (response) {
+
+      var songs = response.tracks.items
+      var info = "\nType of search: " + searchType + "\nSong Searched: " + song;
+
+      for (var i = 0; i < songs.length; i++) {
+        var songPreview = songs[i].preview_url;
+        if (songs[i].preview_url) {
+          songPreview = songs[i].preview_url.split("=")[0]
+        }
+        info += "\n--------------" + "\nArtist: " + songs[i].artists[0].name + "\nSong Title: " + songs[i].name + "\nSong Preview: " + songPreview + "\nAlbum Name: " + songs[i].album.name + "\n--------------"
+      }
+
+      // Writes info to log.txt file then displays info in the terminal
+      writeFile(info)
+  })
+  .catch(function (err) {
+    console.log(err);
+  });
+}
+
+// Uses inquirer to prompt user for song they want to hear then calls searchSpotify()
 var showSong = function () {
   inquirer.prompt([
     {
@@ -29,6 +65,7 @@ var showSong = function () {
   })
 }  
 
+// Uses inquirer to prompt user for Movie they want to hear then calls OMDB API
 var showMovie = function () {
   inquirer.prompt([
     {
@@ -97,41 +134,6 @@ var doThis = function () {
     var song = dataArr[1]
     // Calls spotify API
     spotifySearch(song)
-  });
-}
-
-function spotifySearch (song) {
-  spotify.search({ type: 'track', query: song, limit: 5 })
-    .then(function (response) {
-
-      var songs = response.tracks.items
-      var info = "\nType of search: " + searchType + "\nSong Searched: " + song;
-
-      for (var i = 0; i < songs.length; i++) {
-        var songPreview = songs[i].preview_url;
-        if (songs[i].preview_url) {
-          songPreview = songs[i].preview_url.split("=")[0]
-        }
-        info += "\n--------------" + "\nArtist: " + songs[i].artists[0].name + "\nSong Title: " + songs[i].name + "\nSong Preview: " + songPreview + "\nAlbum Name: " + songs[i].album.name + "\n--------------"
-      }
-      
-      // Writes info to log.txt file then displays info in the terminal
-      writeFile(info)
-    })
-  .catch(function (err) {
-    console.log(err);
-  });
-}
-
-// Writes info to log.txt file then displays info in the terminal
-function writeFile (info){
-  fs.appendFile("log.txt", info, function (err) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      console.log(info)
-    }
   });
 }
 
