@@ -20,6 +20,14 @@ IRI is a Language Interpretation and Recognition Interface. LIRI is a command li
     3. Data is retrieved from the API then appended to a .txt file
     4. Finally the data is displayed to the user in the terminal
     
+### Technology Used
+1. Node-Spotify-API
+2. Inquirer
+3. Axios
+4. Moment
+5. DotEnv
+6. File-system (fs)
+
 ### Line Commands Rundowns
     
 ###### concert-this -  Bands in Town Artist Events API
