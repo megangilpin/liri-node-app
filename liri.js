@@ -1,4 +1,4 @@
-// add code to read and set any environment variables with the dotenv package:
+//read and set any environment variables with the dotenv package:
 require("dotenv").config();
 
 // Require methods for json package files
@@ -15,6 +15,8 @@ var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 var bintId = keys.bintId;
 var omdbId = keys.omdbId;
+
+// uses process.argv to calls switch function
 var searchType = process.argv[2]
 
 // Writes info to log.txt file then displays info in the terminal
@@ -29,7 +31,7 @@ function writeFile(info) {
   });
 }
 
-// Calls the Spotify api then uses the write file function
+// Calls the Spotify api then runs writeFile()
 function spotifySearch(song) {
   spotify.search({ type: 'track', query: song, limit: 5 })
     .then(function (response) {
@@ -66,7 +68,7 @@ var showSong = function () {
   })
 }  
 
-// Uses inquirer to prompt user for Movie they want to hear then calls OMDB API
+// Uses inquirer to prompt user for Movie they want to know about then calls OMDB API
 var showMovie = function () {
   inquirer.prompt([
     {
@@ -74,18 +76,19 @@ var showMovie = function () {
       message: "What movie do you want to know about?"
     },
   ]).then(function (answers) {
+    // Checks if user input a movie title, if no answer defaults to search for "Mr.Nobody"
+    if (answers.movie) {
+      var movieTitle = answers.movie;
+    } else { movieTitle = "Mr. Nobody"};
 
-    var movieTitle = answers.movie;
     var queryUrl = "http://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&apikey=" + omdbId;
-  
-    // This line is just to help us debug against the actual URL.
   
     axios.get(queryUrl).then(
       function (response) {
         var info = "\nType of search: " + searchType + "\nMovie Searched : " + movieTitle + "\n--------------" + "\nMovie Title: " + response.data.Title + "\nMovie Release Date: " + response.data.Released + "\nIMDB Rating: " + response.data.Ratings[0].Value + "\nRotten Tomatoes Rating: " + response.data.Ratings[1].Value + "Country produced in: " + response.data.Country + "\nPlot of " + movieTitle + " : " + response.data.Plot + "\nActors in " + movieTitle + " : " + response.data.Actors + "\n--------------";
 
-      // Writes info to log.txt file then displays info in the terminal
-        writeFile(info)
+    // Writes info to log.txt file then displays info in the terminal
+      writeFile(info)
       })
       .catch(function (error) {
         if (error.response) {
