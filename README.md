@@ -1,6 +1,5 @@
-# liri-node-app
-# LIRI Bot
-https://megangilpin.github.io/WordGuessGame/
+# LIRI Bot 👾
+https://megangilpin.github.io/liri-node-app/
 
 ### Overview
 
