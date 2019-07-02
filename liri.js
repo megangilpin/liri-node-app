@@ -14,6 +14,7 @@ var keys = require("./keys.js");
 // access keys information
 var spotify = new Spotify(keys.spotify);
 var bintId = keys.bintId;
+var omdbId = keys.omdbId;
 var searchType = process.argv[2]
 
 // Writes info to log.txt file then displays info in the terminal
@@ -75,7 +76,7 @@ var showMovie = function () {
   ]).then(function (answers) {
 
     var movieTitle = answers.movie;
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&apikey=trilogy";
+    var queryUrl = "http://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&apikey=" + omdbId;
   
     // This line is just to help us debug against the actual URL.
   

@@ -5,4 +5,6 @@ exports.spotify = {
   secret: process.env.SPOTIFY_SECRET
 };
 
-exports.bintId = process.env.BANDSINTOWN_ID
+exports.bintId = process.env.BANDSINTOWN_ID;
+
+exports.omdbId = process.env.OMDB_ID;
